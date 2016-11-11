@@ -1,0 +1,140 @@
+<link rel="import" href="./bower_components/polymer/polymer.html">
+
+<dom-module id="svg-chart">
+	<style>
+	:host{
+		display: block;
+		width: 100px;
+		color: #000;
+	}
+	.chart{
+		max-width : 100%;
+		max-height : 100%;
+		width : auto;
+		height: auto;
+	}
+	.chart > text{
+		font-family: "Malgun Gothic";
+		font-size: 0.25px;
+		text-anchor : middle;
+		fill:currentcolor;
+	}
+	</style>
+	<template>
+		<!-- 1,0.5 -->
+		<svg style$="color: [[fontColor]];" viewbox="0 0 1 1" class="chart">
+			<circle cx="0.5" cy="0.5" r="0.5" fill$="[[chartColor]]"></circle>
+			<circle cx="0.5" cy="0.5" r="0.51" fill="rgba(255,255,255,0.9)"></circle>
+			<path d$="M0.5,0 A0.5,0.5 0 [[_sweep(range)]],1 [[x]],[[y]] L0.5,0.5" fill$="[[chartColor]]" class="not_perpect"></path>
+			<circle cx="0.5" cy="0.5" r="0.5" fill$="[[chartColor]]" class="is_perpect"></circle>
+			<circle cx="0.5" cy="0.5" r="0.4" fill="rgba(255,255,255,0.9)"></circle>
+			<text x="0.5" y="0.5" dy="0.1">[[current]]<tspan font-size="0.15" dy="-0.07">[[unit]]</tspan></text>
+		</svg>
+	</template>
+	<script>
+		Polymer({
+			is : "svg-chart",
+			_sweep : function(range) {
+				var percent = this.current - this.min;
+				percent /= this.max;
+				return percent > 0.5 ? 1 : 0;
+			},
+			_perpect : function(range){
+				var percent = this.current - this.min;
+				percent /= this.max;
+				console.log(percent);
+				return percent === 1;
+			},
+			properties : {
+				chartColor : {
+					type : String,
+					value : "gold",
+					reflectToAttribute : true,
+					notify : true
+				},
+				fontColor : {
+					type : String,
+					value : "#000",
+					reflectToAttribute : true,
+					notify : true
+				},
+				min : {
+					type : Number,
+					value : 0,
+					reflectToAttribute : true,
+					notify : true
+				},
+				max : {
+					type : Number,
+					value : 100,
+					reflectToAttribute : true,
+					notify : true
+				},
+				unit : {
+					type : String,
+					value : "%",
+					reflectToAttribute : true,
+					notify : true
+				},
+				range : {
+					type : Number,
+					notify : true,
+					readOnly : true
+				},
+				current : {
+					type : Number,
+					value : 75,
+					reflectToAttribute : true,
+					notify : true
+				},
+				x : {
+					type : Number,
+					value : 1,
+					notify : true
+				},
+				y : {
+					type : Number,
+					value : 0.5,
+					notify : true
+				}
+			},
+			observers : [
+				"observerofRange(min, max, current)"
+			],
+			observerofRange : function(min, max, current) {
+				if(current < min) {
+					this.current = current = min;
+				}
+				if(current > max) {
+					this.current = current = max;
+				}
+
+				if(current === max){
+					this.$$(".not_perpect").style.display = "none";
+					this.$$(".is_perpect").style.display = "block";
+				}else{
+					this.$$(".not_perpect").style.display = "block";
+					this.$$(".is_perpect").style.display = "none";
+				}
+
+				var range = max - min;
+
+				current = (current - min) / range;
+				current -= 0.25;
+				current *= Math.PI * 2;
+
+				var x = Math.cos(current) + 1;
+				x/=2;
+				var y = Math.sin(current) + 1;
+				y/=2;
+
+				this.x = x.toFixed(3);
+				this.y = y.toFixed(3);
+				this._setRange(max - min);
+			},
+			ready : function() {
+
+			}
+		});
+	</script>
+</dom-module>
