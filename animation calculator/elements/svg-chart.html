@@ -1,0 +1,150 @@
+
+<dom-module id="svg-chart">
+<style>
+:host{
+	display: block;
+	width: 100px;
+	color: #000;
+}
+.chart{
+	max-width : 100%;
+	max-height : 100%;
+	width : auto;
+	height: auto;
+}
+.chart > text{
+	font-family: "Malgun Gothic";
+	font-size: 0.25px;
+	text-anchor : middle;
+	fill: currentcolor;
+}
+</style>
+<template>
+	<!-- 1,0.5 -->
+	<svg viewbox="0 0 1 1" class="chart">
+		<circle cx="0.5" cy="0.5" r="0.5" fill$="[[chartColor]]"></circle>
+		<circle cx="0.5" cy="0.5" r="0.51" fill="rgba(255,255,255,0.9)"></circle>
+		<path d$="M0.5,0 A0.5,0.5 0 [[sweep]],1 [[x]],[[y]] L0.5,0.5" style$="fill:[[chartColor]];" class="not_perpect"></path>
+		<circle cx="0.5" cy="0.5" r="0.5" style$="fill:[[chartColor]];" class="is_perpect"></circle>
+		<circle cx="0.5" cy="0.5" r="0.4" fill="rgba(255,255,255,0.9)"></circle>
+		<text x="0.5" y="0.5" dy="0.1">[[text]]<tspan font-size="0.15" dy="-0.07">[[unit]]</tspan></text>
+	</svg>
+</template>
+<script>
+Polymer({
+	is : "svg-chart",
+	properties : {
+		chartColor : {
+			type : String,
+			value : "gold",
+			reflectToAttribute : true,
+			notify : true
+		},
+		chartText : {
+			type : String,
+			reflectToAttribute : true,
+			notify : true
+		},
+		min : {
+			type : Number,
+			value : 0,
+			reflectToAttribute : true,
+			notify : true
+		},
+		max : {
+			type : Number,
+			value : 100,
+			reflectToAttribute : true,
+			notify : true
+		},
+		unit : {
+			type : String,
+			value : "%",
+			reflectToAttribute : true,
+			notify : true
+		},
+		range : {
+			type : Number,
+			notify : true
+		},
+		showInteger : { // true이면 value가 정수로 표시
+			type : Boolean,
+			value : false,
+			notify : true,
+			reflectToAttribute : true
+		},
+		value : {
+			type : Number,
+			value : 40,
+			reflectToAttribute : true,
+			notify : true,
+			observer : "_valueObserver"
+		},
+		x : {
+			type : Number,
+			value : 1,
+			notify : true
+		},
+		y : {
+			type : Number,
+			value : 0.5,
+			notify : true
+		}
+	},
+	_valueObserver : function(value) {
+		if(this.showInteger){
+			this.text = this.chartText || Math.floor(value);
+		}else {
+			this.text = this.chartText || value;
+		}
+	},
+	observers : [
+		"observerofRange(min, max, value)"
+	],
+	observerofRange : function(min, max, value) {
+		if(min > max) {
+			var swap = min;
+			this.min = max;
+			this.max = swap;
+		}
+
+		if(value < min) {
+			this.value = value = min;
+		}
+		if(value > max) {
+			this.value = value = max;
+		}
+
+		if(value === max){
+			this.$$(".not_perpect").style.display = "none";
+			this.$$(".is_perpect").style.display = "block";
+		}else{
+			this.$$(".not_perpect").style.display = "block";
+			this.$$(".is_perpect").style.display = "none";
+		}
+
+		var range = max - min;
+
+		value = (value - min) / range;
+		value -= 0.25;
+		value *= Math.PI * 2;
+
+		var x = Math.cos(value) + 1;
+		x/=2;
+		var y = Math.sin(value) + 1;
+		y/=2;
+
+		this.x = x.toFixed(3);
+		this.y = y.toFixed(3);
+		this.range = max - min;
+
+		var percent = this.value - this.min;
+		percent /= this.range;
+		this.sweep =  percent > 0.5 ? 1 : 0;
+	},
+	ready : function() {
+
+	}
+});
+</script>
+</dom-module>

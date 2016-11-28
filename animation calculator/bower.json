@@ -1,0 +1,25 @@
+{
+  "name": "animation calculator",
+  "homepage": "https://github.com/YedramKim/portfolio",
+  "authors": [
+    "YedarmKim <oncoder@naver.com>"
+  ],
+  "description": "polymer animation",
+  "main": "index.html",
+  "keywords": [
+    "polymer",
+    "animation",
+    "calculator"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.7.0"
+  }
+}

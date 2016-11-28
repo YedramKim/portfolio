@@ -1,0 +1,69 @@
+<link rel="import" href="./svg-chart.html">
+<link rel="import" href="./animation-calculator.html">
+
+<dom-module id="svg-animation-chart">
+<style>
+:host{
+	display: block;
+}
+</style>
+<template>
+<svg-chart id="chart" chart-color="{{chartColor}}" show-integer value="{{currentValue}}" chart-text="{{value}}" min="{{min}}" max="{{max}}" unit="{{unit}}"></svg-chart>
+<animation-calculator id="ani" timing-function="ease-in-out" value="{{currentValue}}" start="{{min}}" end="{{value}}" duration="{{duration}}" auto wait="{{wait}}"></animation-calculator>
+</template>
+<script>
+Polymer({
+	is : "svg-animation-chart",
+	properties : {
+		chartColor : {
+			type : String,
+			value : "gold",
+			reflectToAttribute : true,
+			notify : true
+		},
+		showInteger : { // true이면 value가 정수로 표시
+			type : Boolean,
+			value : false,
+			notify : true,
+			reflectToAttribute : true
+		},
+		min : {
+			type : Number,
+			value : 0,
+			reflectToAttribute : true,
+			notify : true
+		},
+		max : {
+			type : Number,
+			value : 100,
+			reflectToAttribute : true,
+			notify : true
+		},
+		unit : {
+			type : String,
+			value : "%",
+			reflectToAttribute : true,
+			notify : true
+		},
+		value : {
+			type : Number,
+			value : 50,
+			reflectToAttribute : true,
+			notify : true
+		},
+		duration : { // 애니메이션 속도
+			type : Number,
+			value : 2000,
+			notify : true,
+			reflectToAttribute : true
+		},
+		wait : {
+			type : Number,
+			value : 0,
+			notify : true,
+			reflectToAttribute : true
+		},
+	},
+});
+</script>
+</dom-module>
